@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>検索機能テスト</title>
+    <link rel="stylesheet" href="photoPreview.css">
+    <link rel="stylesheet" href="photoShoot.css">
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <h1>MyMemory</h1>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="タグを検索..." />
+            <button id="searchButton">検索</button>
+            <ul id="suggestionList" style="list-style-type: none; padding: 0"></ul>
+        </div>
+    </header>
+
+    <main>
+        <button id="photo-shoot-start-button" disabled onclick="(async () => { await photoShoot.openCamera(await editTool); })()">カメラ起動</button>
+        <button id="showSearchButton">検索を表示/非表示</button>
+        <button id="addButton">add</button>
+        <input type="file" id="fileInput" placeholder="addTag..." />
+        <div id="gallery"></div>
+
+        <div id="taggingModal" class="modal">
+            <div class="modal-content">
+                <h2 class="modal-title">写真のタグ付け</h2><!--編集-->
+
+                <div id="taggingArea">
+                    <h3 class="modal-subtitle">タグを追加</h3><!--編集-->
+                    <div class="modal-input-area"><!--編集-->
+                        <input type="text" id="modalTagInput" placeholder="タグを入力..."
+                            class="flex-1 p-2 border border-gray-300 rounded-lg" />
+                        <button id="modalAddTagButton" class="btn-primary">追加</button><!--編集-->
+                    </div>
+                    <div id="modalSelectedTags" class="tag-list"></div>
+                </div>
+
+                <div class="flex justify-center mb-4">
+                    <img id="previewImage" src="" alt="Photo Preview" class="preview-img" />
+
+                </div>
+
+                <div class="flex justify-center mt-6">
+                    <button id="savePhotoButton" class="">保存</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- プレビュー機能 ←これをコピー-->
+    <div id="photo-preview" class="photo-preview-hidden">
+        <!-- 黒の背景 -->
+        <div id="photo-preview-background"></div>
+        <!-- 表示する画像 -->
+        <img id="photo-preview-photo" src=""></img>
+        <div id="photo-preview-scope">
+            <!-- 拡大縮小閉じるボタン -->
+            <button id="photo-preview-sizeup">+</button>
+            <button id="photo-preview-sizedown">-</button>
+        </div>
+        <button id="photo-preview-close">←</button>
+    </div>
+    <!-- ここまで -->
+
+
+    <!-- 写真撮影用のタグ -->
+    <div id="photo-shoot" class="photo-shoot-hidden">
+        <div id="photo-shoot-background"></div>
+        <video autoplay muted playsinline id="photo-shoot-camera"></video>
+        <img id="photo-shoot-result-image" class="photo-shoot-hidden" alt="">
+        <div class="photo-shoot-control">
+            <button type="button" id="photo-shoot-shoot-button">撮影</button>
+            <button type="button" id="photo-shoot-camera-change">切り替え</button>
+        </div>
+        <div class="photo-shoot-finish-control photo-shoot-hidden">
+            <button type="button" id="photo-shoot-retake-button">もう一度</button>
+            <button type="button" id="photo-shoot-complete-button">完了</button>
+        </div>
+        <button id="photo-shoot-close">←</button>
+    </div>
+    <!-- 終わり -->
+
+
+    <!-- 写真撮影用のスクリプト -->
+    <script src="photoShoot.js"></script>
+    <script src="photoPreview.js"></script>
+    <script src="PhotoAndTagDataBase.js"></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
