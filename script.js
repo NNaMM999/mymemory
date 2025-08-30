@@ -60,8 +60,8 @@ function renderGallery(photosToDisplay) {
     img.className = 'photo-thumbnail'; // 新しいクラス名（または空でも可）
 
     // プレビュー画面表示用
-    img.addEventListener('click', async(e) => {
-        photoPreview.openPreview(img.src);
+    img.addEventListener('click', async (e) => {
+      photoPreview.openPreview(img.src);
     });
 
     photoCard.appendChild(img); // まず画像をカードに追加
@@ -296,6 +296,14 @@ function displayModalTags() {
     modalSelectedTags.appendChild(tagSpan);
   });
   //写真からタグを削除する
+  document.querySelectorAll('#modalSelectedTags .tag-remove-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      //ボタンに紐づいたタグ名を取得
+      const tagToRemove = e.target.dataset.tag;
+      currentPhoto.tag.name = currentPhoto.tag.name.filter(tag => tag !== tagToRemove);
+      displayModalTags();
+    });
+  });
 }
 
 window.onclick = function (e) {
@@ -309,20 +317,20 @@ window.onclick = function (e) {
 // 写真撮影後の関数起動
 async function editTool() {
 
-    //一時的に保存
-    currentPhoto = {
-      //新しい写真のID
-      id: await db.getLastId() + 1,
-      //読み込んだ写真のURLをimgに格納
-      img: photoShoot.getShootedPhoto(),
-      date: new Date().toISOString(),
-      tag: { name: [] },
-    };
-    //選択した画像がページ上の画像プレビュー
-    previewImage.src = photoShoot.getShootedPhoto();
-    //タグのリストをリセット
-    modalSelectedTags.innerHTML = '';
-    //タグ編集モーダル表示
-    taggingModal.classList.add('is-active');
+  //一時的に保存
+  currentPhoto = {
+    //新しい写真のID
+    id: await db.getLastId() + 1,
+    //読み込んだ写真のURLをimgに格納
+    img: photoShoot.getShootedPhoto(),
+    date: new Date().toISOString(),
+    tag: { name: [] },
+  };
+  //選択した画像がページ上の画像プレビュー
+  previewImage.src = photoShoot.getShootedPhoto();
+  //タグのリストをリセット
+  modalSelectedTags.innerHTML = '';
+  //タグ編集モーダル表示
+  taggingModal.classList.add('is-active');
 
 }

@@ -138,7 +138,6 @@ photoShoot.shootButton.addEventListener('click', event => {
 
     const screenType = screen.orientation.type;
     // 幅高さがひっくり返っている場合の補正(android)]
-    console.log(screenType);
     if (screenType == "portrait-primary" || screenType == "portrait-secondary") {
         if (photoShoot.height > photoShoot.width) {
             let temp = photoShoot.height;
