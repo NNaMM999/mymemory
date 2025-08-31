@@ -344,48 +344,48 @@ modalColorPicker.addEventListener('input', (e) => {
 
 
 dateInput.addEventListener('change', async () => {
-    const targetDate = dateInput.value; // <input type="date"> から値を取得
+  const targetDate = dateInput.value; // <input type="date"> から値を取得
 
-    if (!targetDate) {
-        return; // 日付が選択されていない場合は処理を終了
+  if (!targetDate) {
+    return; // 日付が選択されていない場合は処理を終了
+  }
+
+  const allTags = await db.getTags();
+  suggestionList.innerHTML = '';
+  suggestionList.style.display = 'block';
+
+  const filteredTags = [];
+  for (const tagName in allTags) {
+    if (allTags.hasOwnProperty(tagName)) {
+      const tagData = allTags[tagName];
+      if (tagData.date && tagData.date.includes(targetDate)) {
+        filteredTags.push(tagName);
+      }
     }
-
-    const allTags = await db.getTags();
-    suggestionList.innerHTML = '';
-    suggestionList.style.display = 'block';
-
-    const filteredTags = [];
-    for (const tagName in allTags) {
-        if (allTags.hasOwnProperty(tagName)) {
-            const tagData = allTags[tagName];
-            if (tagData.date && tagData.date.includes(targetDate)) {
-                filteredTags.push(tagName);
-            }
-        }
-    }
+  }
 
 
-    if (filteredTags.length > 0) {
-        filteredTags.forEach(tagName => {
-            const li = document.createElement('li');
-            li.textContent = `#${tagName}`;
-            li.className = 'suggestion-item';
-            li.addEventListener('click', () => {
-                const photosWithTag = allPhotos.filter(photo =>
-                    photo.tag.name.includes(tagName)
-                );
-                renderGallery(photosWithTag);
-                searchInput.value = tagName;
-                suggestionList.style.display = 'none';
-            });
-            suggestionList.appendChild(li);
-        });
-    } else {
-        const li = document.createElement('li');
-        li.textContent = '指定した日付のタグは見つかりませんでした。';
-        li.className = 'no-tag-message p-2';
-        suggestionList.appendChild(li);
-    }
+  if (filteredTags.length > 0) {
+    filteredTags.forEach(tagName => {
+      const li = document.createElement('li');
+      li.textContent = `#${tagName}`;
+      li.className = 'suggestion-item';
+      li.addEventListener('click', () => {
+        const photosWithTag = allPhotos.filter(photo =>
+          photo.tag.name.includes(tagName)
+        );
+        renderGallery(photosWithTag);
+        searchInput.value = tagName;
+        suggestionList.style.display = 'none';
+      });
+      suggestionList.appendChild(li);
+    });
+  } else {
+    const li = document.createElement('li');
+    li.textContent = '指定した日付のタグは見つかりませんでした。';
+    li.className = 'no-tag-message p-2';
+    suggestionList.appendChild(li);
+  }
 });
 
 
@@ -400,7 +400,7 @@ async function editTool() {
     //読み込んだ写真のURLをimgに格納
     img: photoShoot.getShootedPhoto(),
     // date: new Date().toISOString(),
-    date : new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split('T')[0],
     tag: { name: [] },
   };
   //選択した画像がページ上の画像プレビュー
@@ -411,3 +411,104 @@ async function editTool() {
   taggingModal.classList.add('is-active');
 
 }
+
+
+
+// DOM要素の取得
+const showMindmapButton = document.getElementById('showMindmapButton');
+const mindmapModal = document.getElementById('mindmapModal');
+const mindmapContainer = document.getElementById('mindmapContainer');
+const closeMindmapButton = document.getElementById('closeMindmapButton');
+let network = null; // vis-networkのインスタンスを保持する変数
+
+// マインドマップ表示生成
+async function generateAndShowMindmap() {
+
+  if (!allTags || Object.keys(allTags).length === 0 || !allPhotos) {
+    alert('可視化するためのタグまたは写真データがありません。');
+    return;
+  }
+
+  //ノードの生成 (各タグがノードになる)
+  const nodes = Object.keys(allTags).map(tagName => ({
+    id: tagName,
+    label: tagName,
+    value: allTags[tagName].num, // タグの出現回数をノードのサイズに反映
+  }));
+
+  //エッジの生成
+  const edgeCounts = {};
+  allPhotos.forEach(photo => {
+    const tags = photo.tag.name;
+    // タグが2つ以上ある場合のみエッジを生成
+    if (tags.length > 1) {
+      for (let i = 0; i < tags.length; i++) {
+        for (let j = i + 1; j < tags.length; j++) {
+          // アルファベット順にソートしてキーを一意にする (例: B-A ではなく A-B)
+          const key = [tags[i], tags[j]].sort().join('---');
+          edgeCounts[key] = (edgeCounts[key] || 0) + 1;
+        }
+      }
+    }
+  });
+
+  const edges = Object.keys(edgeCounts).map(key => {
+    const [from, to] = key.split('---');
+    return {
+      from: from,
+      to: to,
+      value: edgeCounts[key], // 線の太さ、同じタグを何個も持ってた場合
+    };
+  });
+
+  // 3. ネットワークの描画
+  const data = {
+    nodes: nodes,
+    edges: edges
+  };
+
+  // 既存のネットワークがあれば破棄
+  if (network) {
+    network.destroy();
+  }
+  // network = new vis.Network(mindmapContainer, data, options);
+  mindmapModal.classList.add('is-active');
+  network = new mindMap(mindmapContainer, data, (query) => {
+    //検索欄が空でないとき
+    if (query) {
+      searchInput.value = query;
+      //検索欄に入れたキーワードの写真を表示
+      const photoWithTag = allPhotos.filter((photo) =>
+        photo.tag.name.includes(query)
+      );
+      renderGallery(photoWithTag);
+    } /*検索欄が空の時*/ else {
+      renderGallery(allPhotos);
+    }
+    mindmapModal.classList.remove('is-active');
+    document.body.classList.remove('modal-open'); // 背景スクロール禁止を解除
+    // ネットワークを破棄してリソースを解放
+    if (network) {
+      network.destroy();
+      network = null;
+    }
+  });
+
+  // 4. モーダルの表示
+  document.body.classList.add('modal-open'); // 背景スクロール禁止
+}
+
+
+
+// イベントリスナーの設定
+showMindmapButton.addEventListener('click', generateAndShowMindmap);
+
+closeMindmapButton.addEventListener('click', () => {
+  mindmapModal.classList.remove('is-active');
+  document.body.classList.remove('modal-open'); // 背景スクロール禁止を解除
+  // ネットワークを破棄してリソースを解放
+  if (network) {
+    network.destroy();
+    network = null;
+  }
+});

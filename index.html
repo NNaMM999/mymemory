@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>>MyMemory</title>
+    <title>MyMemory</title>
     <link rel="stylesheet" href="photoPreview.css">
     <link rel="stylesheet" href="photoShoot.css">
     <link rel="stylesheet" href="style.css" />
@@ -26,9 +26,10 @@
 
     <main>
         <button id="photo-shoot-start-button" disabled
-            oyyyyyznclick="(async () => { await photoShoot.openCamera(await editTool); })()">カメラ起動</button>
+            onclick="(async () => { await photoShoot.openCamera(await editTool); })()">カメラ起動</button>
 
         <button id="showSearchButton">検索を表示/非表示</button>
+        <button id="showMindmapButton">タグマップを表示</button>
         <button id="addButton">add</button>
         <input type="file" id="fileInput" placeholder="addTag..." />
         <div id="gallery"></div>
@@ -97,6 +98,13 @@
             <div id="mindmapContainer"></div>
         </div>
     </div>
+    <div id="mindmapModal" class="modal">
+        <div class="mindmap-modal-content">
+            <button id="closeMindmapButton" class="mindmap-close-btn">&times;</button>
+            <div id="mindmapContainer"></div>
+        </div>
+    </div>
+    <script src="mindMap.js"></script>
     <script src="photoShoot.js"></script>
     <script src="photoPreview.js"></script>
     <script src="PhotoAndTagDataBase.js"></script>
