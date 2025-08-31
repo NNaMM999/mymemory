@@ -17,6 +17,8 @@ const modalSelectedTags = document.getElementById('modalSelectedTags');
 const taggingModal = document.getElementById('taggingModal');
 const modalTagInput = document.getElementById('modalTagInput');
 const savePhotoButton = document.getElementById('savePhotoButton');
+const dateInput = document.getElementById('dateInput');
+
 
 //非同期で初期設定
 document.addEventListener('DOMContentLoaded', async () => {
@@ -220,13 +222,14 @@ fileInput.addEventListener('change', (e) => {
     const reader = new FileReader();
     //読み込みが完了したら
     reader.onload = async (e) => {
+
       //一時的に保存
       currentPhoto = {
         //新しい写真のID
         id: (await db.getLastId()) + 1,
         //読み込んだ写真のURLをimgに格納
         img: e.target.result,
-        date: new Date().toISOString(),
+        date: new Date().toISOString().split('T')[0], //###################ここ変えた
         tag: { name: [] },
       };
       //選択した画像がページ上の画像プレビュー
@@ -312,6 +315,51 @@ window.onclick = function (e) {
   }
 };
 
+dateInput.addEventListener('change', async () => {
+    const targetDate = dateInput.value; // <input type="date"> から値を取得
+
+    if (!targetDate) {
+        return; // 日付が選択されていない場合は処理を終了
+    }
+
+    const allTags = await db.getTags();
+    suggestionList.innerHTML = '';
+    suggestionList.style.display = 'block';
+
+    const filteredTags = [];
+    for (const tagName in allTags) {
+        if (allTags.hasOwnProperty(tagName)) {
+            const tagData = allTags[tagName];
+            if (tagData.date && tagData.date.includes(targetDate)) {
+                filteredTags.push(tagName);
+            }
+        }
+    }
+
+
+    if (filteredTags.length > 0) {
+        filteredTags.forEach(tagName => {
+            const li = document.createElement('li');
+            li.textContent = `#${tagName}`;
+            li.className = 'suggestion-item';
+            li.addEventListener('click', () => {
+                const photosWithTag = allPhotos.filter(photo =>
+                    photo.tag.name.includes(tagName)
+                );
+                renderGallery(photosWithTag);
+                searchInput.value = tagName;
+                suggestionList.style.display = 'none';
+            });
+            suggestionList.appendChild(li);
+        });
+    } else {
+        const li = document.createElement('li');
+        li.textContent = '指定した日付のタグは見つかりませんでした。';
+        li.className = 'no-tag-message p-2';
+        suggestionList.appendChild(li);
+    }
+});
+
 
 
 // 写真撮影後の関数起動
@@ -323,7 +371,8 @@ async function editTool() {
     id: await db.getLastId() + 1,
     //読み込んだ写真のURLをimgに格納
     img: photoShoot.getShootedPhoto(),
-    date: new Date().toISOString(),
+    // date: new Date().toISOString(),
+    date : new Date().toISOString().split('T')[0],
     tag: { name: [] },
   };
   //選択した画像がページ上の画像プレビュー
