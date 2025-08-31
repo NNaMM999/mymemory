@@ -18,6 +18,11 @@ const taggingModal = document.getElementById('taggingModal');
 const modalTagInput = document.getElementById('modalTagInput');
 const savePhotoButton = document.getElementById('savePhotoButton');
 const dateInput = document.getElementById('dateInput');
+//***カード色追加用変数***
+const modalChangeColorButton = document.getElementById(
+  'modalChangeColorButton'
+);
+const modalColorPicker = document.getElementById('modalColorPicker');
 
 
 //非同期で初期設定
@@ -53,6 +58,11 @@ function renderGallery(photosToDisplay) {
     // クラス名から Tailwind CSS のレイアウト関連のものを削除し、
     // CSSの #gallery .item に任せる
     photoCard.className = 'item'; // style.css で定義された .item クラスのみを適用
+
+    // ***カード色を写真ごとに反映（保存済みならその色を使用）***
+    if (photo.bgColor) {
+      photoCard.style.backgroundColor = photo.bgColor;
+    }
 
     const img = document.createElement('img');
     img.src = photo.img;
@@ -314,6 +324,24 @@ window.onclick = function (e) {
     taggingModal.classList.remove('is-active');
   }
 };
+
+// 色変更ボタン → カラーピッカーを開く
+modalChangeColorButton.addEventListener('click', () => {
+  modalColorPicker.click();
+});
+
+// 色選択時に currentPhoto に保存
+modalColorPicker.addEventListener('input', (e) => {
+  const color = e.target.value;
+  if (currentPhoto) {
+    currentPhoto.bgColor = color;
+    // モーダル内プレビューを軽く色付け（保存前に確認できるように）
+    document.querySelector(
+      '.modal-content'
+    ).style.border = `4px solid ${color}`;
+  }
+});
+
 
 dateInput.addEventListener('change', async () => {
     const targetDate = dateInput.value; // <input type="date"> から値を取得

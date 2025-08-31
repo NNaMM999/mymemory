@@ -286,3 +286,15 @@ button:hover {
   text-align: center;
   padding: 8px 12px; /* liとpaddingを合わせる */
 }
+
+/* カード色変更用の色選択 */
+#gallery .item {
+  background: #fff; /* デフォルト白 */
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, background 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}

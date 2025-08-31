@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>検索機能テスト</title>
+    <title>>MyMemory</title>
     <link rel="stylesheet" href="photoPreview.css">
     <link rel="stylesheet" href="photoShoot.css">
     <link rel="stylesheet" href="style.css" />
@@ -46,6 +46,12 @@
                             class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
                             追加
                         </button>
+                        <button id="modalChangeColorButton"
+                            class="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition duration-300">
+                            <!-- ***ここでカード色変更*** -->
+                            カード色変更
+                        </button>
+                        <input type="color" id="modalColorPicker" style="display: none" />
                     </div>
                     <div id="modalSelectedTags" class="flex flex-wrap gap-2 mb-4"></div>
                 </div>
