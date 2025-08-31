@@ -471,7 +471,6 @@ async function generateAndShowMindmap() {
   if (network) {
     network.destroy();
   }
-  // network = new vis.Network(mindmapContainer, data, options);
   mindmapModal.classList.add('is-active');
   network = new mindMap(mindmapContainer, data, (query) => {
     //検索欄が空でないとき
