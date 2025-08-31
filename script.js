@@ -149,9 +149,9 @@ function renderTagSuggestions(query = '') {
 showSearchButton.addEventListener('click', () => {
   //toggleでhiddenクラスを表示、非表示する
   // 補足: 現在のHTMLには searchArea というIDの要素がないため、この機能は正しく動作しません。
-  if (searchArea) {
-    searchArea.classList.toggle('hidden');
-    if (!searchArea.classList.contains('hidden')) {
+  if (searchBar) {
+    searchBar.classList.toggle('hidden');
+    if (!searchBar.classList.contains('hidden')) {
       // 検索エリアが表示されたら、保存したタグを表示
       renderTagSuggestions();
     }
